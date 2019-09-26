@@ -1,0 +1,2 @@
+# FluTR
+Flu typing resource
