@@ -1,2 +1,2 @@
-# FluTAR
-Flu typing and assembly resource
+# FluStAR
+Flu subtyping and assembly resource
