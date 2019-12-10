@@ -7,7 +7,6 @@ import multiprocessing as mp
 
 #Argument Parser
 parser = argparse.ArgumentParser(description="Use mash to determine influenza subtype")
-parser.add_argument("-s", "--segment", help="Segment to parse (H or N)", choices = ["H", "N"])
 parser.add_argument("-i", "--containment", type=float, help="Minimum containment to report (Default = 0.95)", default=0.95)
 parser.add_argument("-m", "--multiplicity", type=int, help="Minimum median multiplicity (coverage depth) to report (Default = 10)", default=10)
 parser.add_argument("-p", "--threads", help="Maximum number of processors to use (Default = 1)", type = int, default=1)
@@ -60,19 +59,10 @@ for i in range(0, len(prefs)):
 	errf_H = prefix + "_mash_HA.err"
 	errf_N = prefix + "_mash_NA.err"
 
-	if len(inlist[i]) == 1:
+	if len(inlist[i]) in [1,2]:
 		H_cmd = ["mash", "screen",  "-i", str(args.containment), "-p", str(ncpus), args.HA_sketch] + inlist[i]
 		sp.call(H_cmd, stdout=open(outf_H, 'w'), stderr=open(errf_H,'w'))
 		N_cmd = ["mash", "screen",  "-i", str(args.containment), "-p", str(ncpus), args.NA_sketch] + inlist[i]
 		sp.call(N_cmd, stdout=open(outf_N, 'w'), stderr=open(errf_N, 'w'))
-	elif len(inlist[i]) == 2:
-		H_cmd = ["mash", "screen", "-i", str(args.containment), "-p", str(ncpus), args.HA_sketch, "-"]
-		N_cmd = ["mash", "screen", "-i", str(args.containment), "-p", str(ncpus), args.NA_sketch, "-"]
-		catreadsH = sp.Popen(["cat", inlist[i][0], inlist[i][1]], stdout=sp.PIPE, stderr=sys.stderr)
-		sp.Popen(H_cmd, stdin = catreadsH.stdout, stdout=open(outf_H, 'w'), stderr=open(errf_H,'w'))
-		catreadsN = sp.Popen(["cat", inlist[i][0], inlist[i][1]], stdout=sp.PIPE, stderr=sys.stderr)
-		sp.Popen(N_cmd, stdin = catreadsN.stdout, stdout=open(outf_N, 'w'), stderr=open(errf_N,'w'))		
 	else:
 		sys.exit("Something wrong with inlist length")
-	#sp.call(H_cmd, stdout=open(outf_H, 'w'), stderr=open(errf_H,'w'))
-	#sp.call(N_cmd, stdout=open(outf_N, 'w'), stderr=open(errf_N, 'w'))
